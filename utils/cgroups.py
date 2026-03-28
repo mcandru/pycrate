@@ -31,7 +31,7 @@ def setup_cgroup(
         limit_file = os.path.join(cgroup_path, "memory.max")
         with open(limit_file, "w") as f:
             f.write(str(limit_bytes))
-        print(f"  Memory limit: {memory_mb}MB")
+        print(f"Memory limit: {memory_mb}MB")
 
     if cpu_percent is not None:
         # CPU limits in cgroups v2 use a "quota/period" model.
@@ -43,7 +43,7 @@ def setup_cgroup(
         cpu_file = os.path.join(cgroup_path, "cpu.max")
         with open(cpu_file, "w") as f:
             f.write(f"{quota} {period}")
-        print(f"  CPU limit: {cpu_percent}% ({quota}/{period} µs)")
+        print(f"CPU limit: {cpu_percent}% ({quota}/{period} µs)")
 
     return cgroup_path
 

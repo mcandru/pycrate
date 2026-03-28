@@ -61,7 +61,7 @@ def run_container(
     # This becomes the container's root filesystem.
     extract_image(image_path, rootfs)
 
-    # Step 2: Set up cgroups *before* we fork, so we can add the child
+    # Step 2: Set up cgroups before we fork, so we can add the child
     # process to the cgroup immediately.
     cgroup_path = None
     if memory_mb or cpu_percent:
@@ -89,7 +89,7 @@ def run_container(
         setup_filesystem(rootfs)
 
         print(f"Executing: {' '.join(command)}")
-        print("=" * 60)
+        print()
         os.execvp(command[0], command)
 
     else:
