@@ -61,4 +61,7 @@ def add_process_to_cgroup(cgroup_path: str, pid: int) -> None:
 
 
 def cleanup_cgroup(cgroup_path: str) -> None:
+    # Move ourselves back to the root cgroup first — a cgroup can't be
+    # removed while it still has processes in it.
+    add_process_to_cgroup("/sys/fs/cgroup", os.getpid())
     os.rmdir(cgroup_path)
