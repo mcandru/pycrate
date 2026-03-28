@@ -69,7 +69,7 @@ def run_container(
         cgroup_path = setup_cgroup(container_id, memory_limit, cpu_percent)
 
     # Step 3: Create new namespaces.
-    # unshare() tells the kernel: "from now on, give me (and my children)
+    # unshare() tells the kernel: "from now on, give me and my children
     # isolated versions of these resources."
     print("Creating namespaces...")
     os.unshare(ALL_NAMESPACES)
@@ -93,7 +93,7 @@ def run_container(
         os.execvp(command[0], command)
 
     else:
-        # ---- PARENT PROCESS (manages the container lifecycle) ----
+        # Parent process: manages the container lifecycle
 
         # Add the child to the cgroup so resource limits are enforced.
         if cgroup_path:
@@ -103,8 +103,6 @@ def run_container(
         _, status = os.waitpid(pid, 0)
 
         # Clean up.
-        print("=" * 60)
-        print(f"Container {container_id} exited with status {os.WEXITSTATUS(status)}")
         if cgroup_path:
             cleanup_cgroup(cgroup_path)
         shutil.rmtree(rootfs, ignore_errors=True)

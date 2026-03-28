@@ -18,7 +18,7 @@ def setup_cgroup(
 
     The kernel then enforces those limits on all processes in the cgroup.
     """
-    cgroup_path = f"/sys/fs/cgroup/minicontainer-{container_id}"
+    cgroup_path = f"/sys/fs/cgroup/pycrate-{container_id}"
 
     # Create the cgroup directory
     os.makedirs(cgroup_path, exist_ok=True)
@@ -59,7 +59,7 @@ def add_process_to_cgroup(cgroup_path: str, pid: int) -> None:
     Add a process to a cgroup.
 
     Once a PID is written to cgroup.procs, the kernel enforces all of the
-    cgroup's limits on that process (and its children).
+    cgroup's limits on that process and its children.
     """
     procs_file = os.path.join(cgroup_path, "cgroup.procs")
     with open(procs_file, "w") as f:
@@ -67,8 +67,4 @@ def add_process_to_cgroup(cgroup_path: str, pid: int) -> None:
 
 
 def cleanup_cgroup(cgroup_path: str) -> None:
-    """Remove the cgroup directory when the container exits."""
-    try:
-        os.rmdir(cgroup_path)
-    except OSError:
-        pass
+    os.rmdir(cgroup_path)
