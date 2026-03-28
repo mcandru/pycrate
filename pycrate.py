@@ -30,7 +30,6 @@ ALL_NAMESPACES = (
     | os.CLONE_NEWUTS
     | os.CLONE_NEWNET
     | os.CLONE_NEWIPC
-    | os.CLONE_NEWCGROUP
 )
 
 
@@ -67,6 +66,9 @@ def run_container(
     if memory_mb or cpu_percent:
         print("Setting up cgroups...")
         cgroup_path = setup_cgroup(container_id, memory_mb, cpu_percent)
+        # Add ourselves to the cgroup before unshare(CLONE_NEWCGROUP) makes
+        # /sys/fs/cgroup inaccessible. The forked child inherits membership.
+        add_process_to_cgroup(cgroup_path, os.getpid())
 
     # Step 3: Create new namespaces.
     # unshare() tells the kernel: "from now on, give me and my children
@@ -94,10 +96,6 @@ def run_container(
 
     else:
         # Parent process: manages the container lifecycle
-
-        # Add the child to the cgroup so resource limits are enforced.
-        if cgroup_path:
-            add_process_to_cgroup(cgroup_path, pid)
 
         # Wait for the container process to exit.
         _, status = os.waitpid(pid, 0)
