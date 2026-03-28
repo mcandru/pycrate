@@ -3,7 +3,7 @@ import os
 
 def setup_cgroup(
     container_id: str,
-    memory_limit: str | None = None,
+    memory_mb: int | None = None,
     cpu_percent: int | None = None,
 ) -> str:
     """
@@ -23,21 +23,15 @@ def setup_cgroup(
     # Create the cgroup directory
     os.makedirs(cgroup_path, exist_ok=True)
 
-    if memory_limit:
-        # Parse human-readable memory limits like "64M" or "512K"
-        multipliers = {"K": 1024, "M": 1024**2, "G": 1024**3}
-        suffix = memory_limit[-1].upper()
-        if suffix in multipliers:
-            limit_bytes = int(memory_limit[:-1]) * multipliers[suffix]
-        else:
-            limit_bytes = int(memory_limit)
+    if memory_mb is not None:
+        limit_bytes = memory_mb * 1024 * 1024
 
         # Write the memory limit. The kernel will kill any process in this
         # cgroup that tries to exceed this limit (OOM kill).
         limit_file = os.path.join(cgroup_path, "memory.max")
         with open(limit_file, "w") as f:
             f.write(str(limit_bytes))
-        print(f"  Memory limit: {memory_limit} ({limit_bytes} bytes)")
+        print(f"  Memory limit: {memory_mb}MB")
 
     if cpu_percent is not None:
         # CPU limits in cgroups v2 use a "quota/period" model.

@@ -38,7 +38,7 @@ def run_container(
     image_path: str,
     command: list[str],
     hostname: str = "container",
-    memory_limit: str | None = None,
+    memory_mb: int | None = None,
     cpu_percent: int | None = None,
 ) -> None:
     """
@@ -64,9 +64,9 @@ def run_container(
     # Step 2: Set up cgroups *before* we fork, so we can add the child
     # process to the cgroup immediately.
     cgroup_path = None
-    if memory_limit or cpu_percent:
+    if memory_mb or cpu_percent:
         print("Setting up cgroups...")
-        cgroup_path = setup_cgroup(container_id, memory_limit, cpu_percent)
+        cgroup_path = setup_cgroup(container_id, memory_mb, cpu_percent)
 
     # Step 3: Create new namespaces.
     # unshare() tells the kernel: "from now on, give me and my children
@@ -122,7 +122,7 @@ def parse_args() -> Namespace:
         "--hostname", default="container", help="Container hostname"
     )
     run_parser.add_argument(
-        "--memory", default=None, help="Memory limit (e.g. 64M, 512K)"
+        "--memory", type=int, default=None, help="Memory limit in MB (e.g. 64)"
     )
     run_parser.add_argument(
         "--cpu", type=int, default=None, help="CPU limit as percentage (e.g. 50)"
@@ -149,7 +149,7 @@ def main() -> None:
         image_path=args.image,
         command=args.command,
         hostname=args.hostname,
-        memory_limit=args.memory,
+        memory_mb=args.memory,
         cpu_percent=args.cpu,
     )
 
