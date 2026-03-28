@@ -25,4 +25,3 @@ def setup_filesystem(rootfs: str) -> None:
     # After this, all path lookups start from rootfs instead of the real "/".
     os.chroot(rootfs)
     os.chdir("/")
-    os.chdir("/")
