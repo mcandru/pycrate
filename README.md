@@ -102,9 +102,9 @@ os.execvp(command)
 2. Moves itself out of the cgroup and removes it
 3. Deletes the temporary rootfs directory
 
-## Limitations
+## Known Limitations
 
-This is an educational tool, not a production container runtime. Some important differences from something like Docker:
+This is an educational tool and I am no expert in low-level kernel interfaces. Some differences that I know about vs something like Docker:
 
 - **chroot instead of pivot_root** - `chroot` is a path-lookup trick that a root process can escape. Docker uses `pivot_root` which actually swaps the mount namespace root, making escape much harder.
 - **No overlayfs** - Docker uses layered filesystems so multiple containers can share base image layers. We extract a flat tarball each time.
