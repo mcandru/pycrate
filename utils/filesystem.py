@@ -23,5 +23,7 @@ def setup_filesystem(rootfs: str) -> None:
 
     # chroot: make the image directory the new root filesystem.
     # After this, all path lookups start from rootfs instead of the real "/".
+    # IMPORTANT: this is vulnerable to chroot escapes if the image contains malicious binaries. In a
+    # real container runtime, you'd use additional isolation (like user namespaces) to mitigate this.
     os.chroot(rootfs)
     os.chdir("/")
